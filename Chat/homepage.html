@@ -1,85 +1,28 @@
-<html lang="en">
-
+<!DOCTYPE html>
+<html>
     <head>
-        <meta charset="utf-8">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="style.css"/>
+        <script src="scripts.js"></script>
         <title>Quober</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="author" content="">
-
-        <link href="bootstrap/bootstrap.css" rel="stylesheet">
-        <link href="bootstrap/bootstrap-responsive.css" rel="stylesheet">
-        <link href="style.css" rel="stylesheet">
     </head>
-
-    <body>
-
-        <div class="page">
-            <div class="title">
-                <div class="txt">Quober</div>
+    <body onload="run();">
+        <div class="wrapper">
+            <div class="hat"><font size="5">Quober</font></div> 
+            <div class="loginbox">
+                <div class="login">User</div>
+                <input id="login" type="text" class="login-form">
+                <button type="button" class="leditbut">Edit</button>
+                <button type="button" class="lsavebut">Save</button>
             </div>
-            <div class="container">
-                <form class="form-signin">
-                    <input type="text" class="input-block-level" placeholder="Login">
-                    <input type="password" class="input-block-level" placeholder="Password">
-                    <label class="checkbox">
-                        <input type="checkbox" value="remember-me"> Remember me
-                    </label>
-                    <button class="btn" type="submit">Log in</button>
-                </form>
-            </div> 
-            <div class="list">
-                <img src="img/avatar.png" class="avatar">
-                <div class="nick">John</div>
-                <div><i class="icon-info-sign ic3"></i></div>
-            </div>
-            <div class="info2"><div class="itxt">Users: 1</div></div>
-            <div class="info1">
-                <div class="itxt">Server status: <i class="icon-ok"></i></div> 
-            </div>
-            <div class="message">
-                <div class="input-append">
-                    <input class="btn but" type="submit" value="Send" style="width: 80px">
-                    <textarea class="msg" placeholder="Write yout message"></textarea>
-                </div>
-                <div class="ic">
-                    <div class="ic1"><i class="icon-user"></i></div>
-                    <div class="ic2"><i class="icon-picture"></i></div>
-                </div>
-            </div>
-            <div class="messages">
-                <p class="btxt">John: My last message.</p>
-                <div><i class="icon-pencil mic1"></i></div>
-                <div><i class="icon-trash mic2"></i></div>
-            </div>
-            <div class="rooms">
-                <div class="btn-group">
-                    <button class="btn active">Hall</button>
-                    <button class="btn">Room 2</button>
-                    <button class="btn">Room 3</button>
-                    <button class="btn">My Room</button>
-                    <button class="btn">Private Room</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                    <button class="btn">Room 1</button>
-                </div>
+            <div class="usersbox"></div>
+            <div class="infobar1">Server: ON</div>
+            <div class="infobar2">Users: 1</div>
+            <div class="messageslist"></div>
+            <div class="messagebox">
+                <button type="button" class="sender">Send</button>
+                <textarea id="todoMes" class="msg" placeholder="Write yout message"></textarea>
             </div>
         </div>
-
     </body>
-
 </html>
