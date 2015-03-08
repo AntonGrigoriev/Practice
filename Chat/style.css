@@ -100,7 +100,6 @@
 }
 .msg{
     position: absolute;
-	right: 0px;
     bottom: 0px;
     height: 27px;
     width: 625px;
@@ -138,7 +137,7 @@
     color: #b3b3b3;
 }
 img{
+    vertical-align: top;
     height: 13px;
     width: 13px;
-    margin: 2px;
 }

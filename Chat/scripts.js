@@ -79,7 +79,7 @@ function editMes(evtObj) {
     if (place !== null) {
         place.classList.remove('sys');
     }
-    var mes = evtObj.target.parentNode.parentNode.childNodes[2];
+    var mes = evtObj.target.parentNode.parentNode.childNodes[3];
     if (mes !== place) {
         mes.classList.add('sys');
         document.getElementById('todoMes').value = mes.firstChild.nodeValue;
@@ -144,14 +144,16 @@ function createItem(text) {
     var table = document.createElement('table');
     var row = document.createElement('tr');
     var cell1 = document.createElement('td');
-	cell1.classList.add('itd');
+    cell1.classList.add('itd');
     var ic1 = document.createElement('img');
     ic1.src='img/pencil.png';
     ic1.classList.add('edit');
+    var cell = document.createElement('td');
+    cell.classList.add('itd');
     var ic2 = document.createElement('img');
     ic2.src='img/trashcan.png';
     ic2.classList.add('delete');
-    cell1.appendChild(ic1);
+    cell.appendChild(ic1);
     cell1.appendChild(ic2);
     var cell2 = document.createElement('td');
     cell2.classList.add('ntd');
@@ -160,6 +162,7 @@ function createItem(text) {
     var cell3 = document.createElement('td');
     cell3.classList.add('mtd');
     cell3.appendChild(document.createTextNode(text));
+    row.appendChild(cell);
     row.appendChild(cell1);
     row.appendChild(cell2);
     row.appendChild(cell3);
