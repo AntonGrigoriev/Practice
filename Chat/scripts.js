@@ -70,6 +70,11 @@ function editMessage() {
 }
 
 function deleteMes(evtObj) {
+    var pl = evtObj.target.parentNode.parentNode.childNodes[3];
+    if (pl === place) {
+        document.getElementById('todoMes').value = '';
+        place = null;
+    }
     var mes = evtObj.target.parentNode.parentNode.parentNode;
     mes.removeChild(mes.firstChild);
     createDelMes(mes, 'Deleted');
@@ -146,12 +151,12 @@ function createItem(text) {
     var cell1 = document.createElement('td');
     cell1.classList.add('itd');
     var ic1 = document.createElement('img');
-    ic1.src='img/pencil.png';
+    ic1.src = 'img/pencil.png';
     ic1.classList.add('edit');
     var cell = document.createElement('td');
     cell.classList.add('itd');
     var ic2 = document.createElement('img');
-    ic2.src='img/trashcan.png';
+    ic2.src = 'img/trashcan.png';
     ic2.classList.add('delete');
     cell.appendChild(ic1);
     cell1.appendChild(ic2);
