@@ -144,6 +144,7 @@ function createItem(text) {
     var table = document.createElement('table');
     var row = document.createElement('tr');
     var cell1 = document.createElement('td');
+	cell1.classList.add('itd');
     var ic1 = document.createElement('img');
     ic1.src='img/pencil.png';
     ic1.classList.add('edit');
