@@ -59,7 +59,6 @@
     width: 695px;
     border: 2px solid #000000;
     overflow: auto;
-    
 }
 .messagebox{
     position: absolute;
@@ -72,7 +71,7 @@
 .itd{
     height: auto;
     width: auto;
-    vertical-align: top;
+    vertical-align: bottom;
 }
 .mtd{
     height: auto;
@@ -83,16 +82,14 @@
     height: auto;
     width: auto;
     vertical-align: top;
+    font-size: 125%;
+    color: #808080;
+    font-weight: bold;
+    max-width: 600px;
 }
 .name{
     position: absolute;
     top: 0px;
-}
-.edBut{
-    width: 52.5px;
-}
-.dBut{
-    
 }
 .sender{
     height: 32px;
@@ -137,7 +134,29 @@
 .sys{
     color: #b3b3b3;
 }
+.system{
+    color: #b3b3b3;
+    font-size: 115%;
+    margin-bottom: 5px;
+}
 img{
     height: 13px;
     width: 13px;
+}
+textarea {
+    outline: none;
+    -moz-appearance: none;
+    border: 1px solid #999;
+}
+input {
+    outline: none;
+    -moz-appearance: none;
+    border: 1px solid #999;
+}
+.mes{
+    vertical-align: top;
+    resize: none;
+    border: 0px;
+    width: 660px;
+    font-size: 115%;
 }

@@ -1,14 +1,19 @@
 var place;
 var server;
 var mesbox;
+var isShift;
 
 function run() {
+    isShift = false;
     place = null;
     server = true;
     mesbox = document.getElementsByClassName('messageslist')[0];
-    mesbox.appendChild(createSysMes('Server connected'));
+    sendSysMes('Server connected');
     var appContainer = document.getElementsByClassName('wrapper')[0];
     appContainer.addEventListener('click', delegateEvent);
+    var textarea = document.getElementById('todoMes');
+    textarea.addEventListener('keydown', onTextClick);
+    textarea.addEventListener('keyup', onTextUnClick);
 }
 
 function delegateEvent(evtObj) {
@@ -37,115 +42,143 @@ function delegateEvent(evtObj) {
     }
 }
 
+function resizeMessages() {
+    var arr = document.getElementsByClassName('mes');
+    var len = arr.length;
+    for (var i = 0; i < len; i++) {
+        arr[i].style.height = '0px';
+        arr[i].style.height = arr[i].scrollHeight + 'px';
+    }
+}
+
+function onTextClick(evtObj) {
+    if (evtObj.keyCode === 13) {
+        if (!isShift) {
+            if (place === null) {
+                onSendButtonClick(evtObj);
+            } else {
+                editMessage(evtObj);
+            }
+            evtObj.preventDefault();
+        } else {
+            if (document.getElementById('todoMes').value !== '') {
+                document.getElementById('todoMes').value = document.getElementById('todoMes').value + '\r\n';
+            }
+            document.getElementById('todoMes').scrollTop = document.getElementById('todoMes').scrollHeight;
+            evtObj.preventDefault();
+        }
+    }
+    if (evtObj.keyCode === 16) {
+        isShift = true;
+    }
+}
+
+function onTextUnClick(evtObj) {
+    if (evtObj.keyCode === 16) {
+        isShift = false;
+    }
+}
+
 function clientOff() {
     var infobar = document.getElementsByClassName('infobar1')[0];
+    document.getElementsByClassName('msg')[0].disabled = server;
+    document.getElementsByClassName('login-form')[0].disabled = server;
+    infobar.removeChild(infobar.firstChild);
     if (server === true) {
-        mesbox.appendChild(createSysMes('Server disconnected'));
-        mesbox.scrollTop = mesbox.scrollHeight;
-        document.getElementsByClassName('msg')[0].disabled = true;
-        document.getElementsByClassName('login-form')[0].disabled = true;
-        infobar.removeChild(infobar.firstChild);
         infobar.appendChild(document.createTextNode('Server: OFF'));
-        server = false;
+        sendSysMes('Server disconnected');
     } else {
-        mesbox.appendChild(createSysMes('Server connected'));
-        mesbox.scrollTop = mesbox.scrollHeight;
-        document.getElementsByClassName('msg')[0].disabled = false;
-        document.getElementsByClassName('login-form')[0].disabled = false;
-        infobar.removeChild(infobar.firstChild);
         infobar.appendChild(document.createTextNode('Server: ON'));
-        server = true;
+        sendSysMes('Server connected');
+        document.getElementById('todoMes').focus();
     }
+    server = !server;
+    mesbox.scrollTop = mesbox.scrollHeight;
 }
 
 function editMessage() {
     var text = document.getElementById('todoMes');
     if (text.value !== '') {
-        place.removeChild(place.firstChild);
-        place.appendChild(document.createTextNode(text.value));
+        place.value = text.value;
     }
     text.value = '';
     place.classList.remove('sys');
+    text.focus();
+    resizeMessages();
+    if (place.parentNode === mesbox.lastChild) {
+        mesbox.scrollTop = mesbox.scrollHeight;
+    }
     place = null;
 }
 
 function deleteMes(evtObj) {
-    var pl = evtObj.target.parentNode.parentNode.childNodes[3];
+    var pl = evtObj.target.parentNode.parentNode.parentNode.parentNode.childNodes[1];
     if (pl === place) {
         document.getElementById('todoMes').value = '';
         place = null;
     }
-    var mes = evtObj.target.parentNode.parentNode.parentNode;
-    mes.removeChild(mes.firstChild);
-    createDelMes(mes, 'Deleted');
+    var mes = evtObj.target.parentNode.parentNode.parentNode.parentNode;
+    mes.removeChild(mes.childNodes[0]);
+    mes.removeChild(mes.childNodes[0]);
+    var txt = document.createTextNode('Deleted');
+    mes.appendChild(txt);
+    mes.classList.add('sys');
+    document.getElementById('todoMes').focus();
 }
 
 function editMes(evtObj) {
     if (place !== null) {
         place.classList.remove('sys');
     }
-    var mes = evtObj.target.parentNode.parentNode.childNodes[3];
+    var mes = evtObj.target.parentNode.parentNode.parentNode.parentNode.childNodes[1];
     if (mes !== place) {
         mes.classList.add('sys');
-        document.getElementById('todoMes').value = mes.firstChild.nodeValue;
+        document.getElementById('todoMes').value = mes.value;
         place = mes;
     } else {
         document.getElementById('todoMes').value = '';
         mes.classList.remove('sys');
         place = null;
     }
-}
-
-function createDelMes(evtObj, text) {
-    var row = document.createElement('tr');
-    var cell3 = document.createElement('td');
-    cell3.classList.add('mtd');
-    cell3.classList.add('sys');
-    cell3.appendChild(document.createTextNode(text));
-    row.appendChild(cell3);
-    evtObj.appendChild(row);
+    document.getElementById('todoMes').focus();
 }
 
 function onEditButtonClick() {
     document.getElementById('login').value = document.getElementsByClassName('login')[0].firstChild.nodeValue;
+    document.getElementById('login').focus();
 }
 
 function onSaveButtonClick() {
-    var login = document.getElementById('login');
-    addLogin(login.value);
-    login.value = '';
-}
-
-function addLogin(value) {
-    if (!value) {
+    var logIn = document.getElementById('login');
+    if (!logIn.value) {
         return;
     }
     var login = document.getElementsByClassName('login')[0];
-    if (login.firstChild.nodeValue !== value) {
-        var text = login.firstChild.nodeValue + " change name to " + value;
-        mesbox.appendChild(createSysMes(text));
-        mesbox.scrollTop = mesbox.scrollHeight;
+    if (login.firstChild.nodeValue !== logIn.value) {
+        sendSysMes(login.firstChild.nodeValue + " change name to " + logIn.value);
         login.removeChild(login.childNodes[0]);
-        login.appendChild(document.createTextNode(value));
+        login.appendChild(document.createTextNode(logIn.value));
     }
+    logIn.value = '';
+    logIn.focus();
+    mesbox.scrollTop = mesbox.scrollHeight;
 }
 
 function onSendButtonClick() {
     var todoText = document.getElementById('todoMes');
-    addTodo(todoText.value);
-    todoText.value = '';
-}
-
-function addTodo(value) {
-    if (!value) {
+    if (!todoText.value) {
         return;
     }
-    var item = createItem(value);
+    var item = createItem(todoText.value);
     mesbox.appendChild(item);
+    todoText.value = '';
+    todoText.focus();
+    resizeMessages();
     mesbox.scrollTop = mesbox.scrollHeight;
 }
 
 function createItem(text) {
+    var message = document.createElement('div');
     var table = document.createElement('table');
     var row = document.createElement('tr');
     var cell1 = document.createElement('td');
@@ -164,24 +197,23 @@ function createItem(text) {
     cell2.classList.add('ntd');
     var login = document.getElementsByClassName('login')[0];
     cell2.appendChild(document.createTextNode(login.firstChild.nodeValue + ": "));
-    var cell3 = document.createElement('td');
-    cell3.classList.add('mtd');
-    cell3.appendChild(document.createTextNode(text));
+    var txt = document.createElement('textarea');
+    txt.value = text;
+    txt.classList.add('mes');
+    txt.readOnly = true;
     row.appendChild(cell);
     row.appendChild(cell1);
     row.appendChild(cell2);
-    row.appendChild(cell3);
     table.appendChild(row);
-    return table;
+    message.appendChild(table);
+    message.appendChild(txt);
+    return message;
 }
-function createSysMes(text) {
-    var table = document.createElement('table');
-    var row = document.createElement('tr');
-    var cell3 = document.createElement('td');
-    cell3.classList.add('mtd');
-    cell3.classList.add('sys');
-    cell3.appendChild(document.createTextNode(text));
-    row.appendChild(cell3);
-    table.appendChild(row);
-    return table;
+
+function sendSysMes(text) {
+    var mes = document.createElement('div');
+    var txt = document.createTextNode(text);
+    mes.classList.add('system');
+    mes.appendChild(txt);
+    mesbox.appendChild(mes);
 }
