@@ -20,7 +20,7 @@
     right: 0px;
     top: 30px;
     height: 150px;
-    width: 300px;
+    width: 299px;
     border: 2px solid #000000;
 }
 .usersbox{
@@ -35,11 +35,14 @@
     position: absolute;
     right: 0px;
     bottom: 0px;
-    height: 32px;
-    width: 149px;
+    height: 28px;
+    width: 295px;
     border: 2px solid #000000;
     text-align: center;
     font-size: 115%;
+    resize: none;
+    vertical-align: central;
+    font-size:145%;
 }
 .infobar2{
     position: absolute;
@@ -64,7 +67,7 @@
     position: absolute;
     bottom: 0px;
     left: 0px;
-    width: 694px;
+    width: 695px;
     height: 32px;
     border: 2px solid #000000;
 }
@@ -82,7 +85,7 @@
     height: auto;
     width: auto;
     vertical-align: top;
-    font-size: 125%;
+    font-size: 120%;
     color: #808080;
     font-weight: bold;
     max-width: 600px;
@@ -100,7 +103,7 @@
     bottom: 0px;
     right: 0px;
     height: 27px;
-    width: 625px;
+    width: 626px;
     resize: none;
 }
 .login-form{
@@ -123,19 +126,21 @@
 }
 .login{
     position: absolute;
-    top: 22px;
+    top: 16px;
     left: 0px;
-    width: 297px;
-    height: 58px;
+    width: 294px;
+    height: 62px;
     text-align: center;
+    vertical-align: top;
     font-size: 200%;
-    overflow: auto;
+    resize: none;
+    border: 0px;
 }
 .sys{
     color: #b3b3b3;
 }
 .system{
-    color: #b3b3b3;
+    color: #999;
     font-size: 115%;
     margin-bottom: 5px;
 }
@@ -159,4 +164,7 @@ input {
     border: 0px;
     width: 660px;
     font-size: 115%;
+}
+.line{
+    width: 625px;
 }
