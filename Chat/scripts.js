@@ -27,6 +27,7 @@ function run() {
     isShift = false;
     place = null;
     server = true;
+    document.getElementsByClassName('infobar1')[0].value = 'Server: ON';
     mesbox = document.getElementsByClassName('messageslist')[0];
     var history = restore();
     if (history !== null) {
@@ -57,7 +58,7 @@ function writeHistory(list) {
 }
 
 function delegateEvent(evtObj) {
-    if (server === true) {
+    if (server) {
         if (evtObj.type === 'click' && evtObj.target.classList.contains('sender') && place === null) {
             onSendButtonClick(evtObj);
         }
@@ -78,7 +79,7 @@ function delegateEvent(evtObj) {
         }
     }
     if (evtObj.type === 'click' && evtObj.target.classList.contains('infobar1')) {
-        clientOff(evtObj);
+        clientSwitch(evtObj);
     }
 }
 
@@ -119,11 +120,11 @@ function onTextUnClick(evtObj) {
     }
 }
 
-function clientOff() {
-    var infobar = document.getElementsByClassName('infobar1')[0];
+function clientSwitch() {
+    infobar = document.getElementsByClassName('infobar1')[0];
     document.getElementsByClassName('msg')[0].disabled = server;
     document.getElementsByClassName('login-form')[0].disabled = server;
-    if (server === true) {
+    if (server) {
         infobar.value = 'Server: OFF';
         sendSysMes('Server disconnected');
     } else {
