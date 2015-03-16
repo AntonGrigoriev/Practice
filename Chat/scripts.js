@@ -8,12 +8,13 @@ var Id = function () {
     var random = Math.random() * Math.random();
     return Math.floor(date * random).toString();
 };
-var mStruct = function (name, text, isSys) {
+var mStruct = function (name, text, isSys, info) {
     return {
         name: name,
         message: text,
         id: Id(),
-        isSys: isSys
+        isSys: isSys,
+        info: info
     };
 };
 var mlist = [];
@@ -47,7 +48,7 @@ function writeHistory(list) {
         if (list[i].isSys) {
             sendSysMes(list[i].message);
         } else {
-            var userMsg = createItem(list[i].message, list[i].name, false);
+            var userMsg = createItem(list[i].message, list[i].name, false, list[i].info);
             userMsg.lastChild.classList.add('sys');
             mesbox.appendChild(userMsg);
         }
@@ -138,48 +139,45 @@ function clientSwitch() {
 
 function editMessage() {
     var text = document.getElementById('todoMes');
-    if (text.value !== '') {
+    if (text.value !== '' && text.value !== place.value) {
         place.value = text.value;
-    }
-    var id = place.attributes['message-id'].value;
-    for (var i = 0; i < mlist.length; i++) {
-        if (mlist[i].id === id) {
-            mlist[i].message = place.value;
-            store(mlist);
-            break;
+        place.parentNode.firstChild.firstChild.childNodes[3].firstChild.value = '<edited>';
+        var id = place.attributes['message-id'].value;
+        for (var i = 0; i < mlist.length; i++) {
+            if (mlist[i].id === id) {
+                mlist[i].message = place.value;
+                mlist[i].info = '<edited>';
+                store(mlist);
+                break;
+            }
         }
     }
     text.value = '';
     place.classList.remove('sys');
     text.focus();
     resizeMessages();
-    if (place.parentNode === mesbox.lastChild) {
-        mesbox.scrollTop = mesbox.scrollHeight;
-    }
     place = null;
 }
 
 function deleteMes(evtObj) {
-    var pl = evtObj.target.parentNode.parentNode.parentNode.parentNode.childNodes[1];
-    var id = pl.attributes['message-id'].value;
+    var mes = evtObj.target.parentNode.parentNode.parentNode.parentNode;
+    var id = mes.childNodes[1].attributes['message-id'].value;
     for (var i = 0; i < mlist.length; i++) {
         if (mlist[i].id === id) {
-            mlist[i].message = 'Deleted';
-            mlist[i].isSys = true;
+            mlist[i].message = '';
+            mlist[i].info = '<deleted>';
             store(mlist);
             break;
         }
     }
-    if (pl === place) {
+    if (mes.childNodes[1] === place) {
         document.getElementById('todoMes').value = '';
         place = null;
     }
-    var mes = evtObj.target.parentNode.parentNode.parentNode.parentNode;
-    mes.removeChild(mes.childNodes[0]);
-    mes.removeChild(mes.childNodes[0]);
-    var txt = document.createTextNode('Deleted');
-    mes.classList.add('system');
-    mes.appendChild(txt);
+    mes.removeChild(mes.childNodes[1]);
+    mes.firstChild.firstChild.removeChild(mes.firstChild.firstChild.firstChild);
+    mes.firstChild.firstChild.removeChild(mes.firstChild.firstChild.firstChild);
+    mes.firstChild.firstChild.childNodes[1].firstChild.value = '<deleted>';
     document.getElementById('todoMes').focus();
 }
 
@@ -227,7 +225,7 @@ function onSendButtonClick() {
     if (!todoText.value) {
         return;
     }
-    var item = createItem(todoText.value, Login.value, true);
+    var item = createItem(todoText.value, Login.value, true, '');
     mesbox.appendChild(item);
     todoText.value = '';
     todoText.focus();
@@ -235,8 +233,8 @@ function onSendButtonClick() {
     mesbox.scrollTop = mesbox.scrollHeight;
 }
 
-function createItem(text, name, isMine) {
-    var msg = mStruct(name, text, false);
+function createItem(text, name, isMine, info) {
+    var msg = mStruct(name, text, false, info);
     mlist.push(msg);
     store(mlist);
     var message = document.createElement('div');
@@ -261,15 +259,23 @@ function createItem(text, name, isMine) {
     var cell2 = document.createElement('td');
     cell2.classList.add('ntd');
     cell2.appendChild(document.createTextNode(name + ": "));
-    var txt = document.createElement('textarea');
-    txt.value = text;
-    txt.classList.add('mes');
-    txt.readOnly = true;
-    txt.setAttribute('message-id', msg.id);
     row.appendChild(cell2);
+    var cell0 = document.createElement('td');
+    cell0.appendChild(document.createElement('textarea'));
+    cell0.firstChild.classList.add('minfo');
+    cell0.firstChild.value = info;
+    cell0.firstChild.readOnly = true;
+    row.appendChild(cell0);
     table.appendChild(row);
     message.appendChild(table);
-    message.appendChild(txt);
+    if (text !== '') {
+        var txt = document.createElement('textarea');
+        txt.value = text;
+        txt.classList.add('mes');
+        txt.readOnly = true;
+        txt.setAttribute('message-id', msg.id);
+        message.appendChild(txt);
+    }
     return message;
 }
 

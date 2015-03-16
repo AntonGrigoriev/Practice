@@ -88,7 +88,6 @@
     font-size: 120%;
     color: #808080;
     font-weight: bold;
-    max-width: 600px;
 }
 .name{
     position: absolute;
@@ -102,7 +101,7 @@
     position: absolute;
     bottom: 0px;
     right: 0px;
-    height: 26px;
+    height: 27px;
     width: 626px;
     resize: none;
 }
@@ -162,9 +161,16 @@ input {
     vertical-align: top;
     resize: none;
     border: 0px;
-    width: 660px;
+    width: 666px;
     font-size: 115%;
 }
 .line{
     width: 625px;
+}
+.minfo{
+    height: 15px;
+    vertical-align: bottom;
+    resize: none;
+    border: 0px;
+    color: #999;
 }
