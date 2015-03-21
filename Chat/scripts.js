@@ -8,16 +8,17 @@ var Id = function () {
     var random = Math.random() * Math.random();
     return Math.floor(date * random).toString();
 };
-var mStruct = function (name, text, isSys, info) {
+var mStruct = function (name, text, time, isSys, info) {
     return {
         name: name,
         message: text,
+        time: time,
         id: Id(),
         isSys: isSys,
         info: info
     };
 };
-var mlist = [];
+var messagesList = [];
 
 function run() {
     Login = document.getElementsByClassName('login')[0];
@@ -36,11 +37,11 @@ function run() {
     }
     var appContainer = document.getElementsByClassName('wrapper')[0];
     appContainer.addEventListener('click', delegateEvent);
-    var textarea = document.getElementById('todoMes');
-    textarea.addEventListener('keydown', onTextClick);
-    textarea.addEventListener('keyup', onTextUnClick);
-    var login = document.getElementById('login');
-    login.addEventListener('keydown', onSaveButtonClick);
+    var messageForm = document.getElementById('todoMes');
+    messageForm.addEventListener('keydown', onKeyClick);
+    messageForm.addEventListener('keyup', onKeyUnClick);
+    var loginForm = document.getElementById('login');
+    loginForm.addEventListener('keydown', saveLogin);
 }
 
 function writeHistory(list) {
@@ -48,7 +49,7 @@ function writeHistory(list) {
         if (list[i].isSys) {
             sendSysMes(list[i].message);
         } else {
-            var userMsg = createItem(list[i].message, list[i].name, false, list[i].info);
+            var userMsg = createItem(false, list[i].time, list[i].name, list[i].message, list[i].info);
             userMsg.lastChild.classList.add('sys');
             mesbox.appendChild(userMsg);
         }
@@ -61,22 +62,22 @@ function writeHistory(list) {
 function delegateEvent(evtObj) {
     if (server) {
         if (evtObj.type === 'click' && evtObj.target.classList.contains('sender') && place === null) {
-            onSendButtonClick(evtObj);
+            sendMessage(evtObj);
         }
         if (evtObj.type === 'click' && evtObj.target.classList.contains('sender') && place !== null) {
-            editMessage(evtObj);
+            changeMessage(evtObj);
         }
         if (evtObj.type === 'click' && evtObj.target.classList.contains('lsavebut')) {
-            onSaveButtonClick(evtObj);
+            saveLogin(evtObj);
         }
         if (evtObj.type === 'click' && evtObj.target.classList.contains('leditbut')) {
-            onEditButtonClick(evtObj);
+            editLogin(evtObj);
         }
         if (evtObj.type === 'click' && evtObj.target.classList.contains('delete')) {
-            deleteMes(evtObj);
+            deleteMessage(evtObj);
         }
         if (evtObj.type === 'click' && evtObj.target.classList.contains('edit')) {
-            editMes(evtObj);
+            editMessage(evtObj);
         }
     }
     if (evtObj.type === 'click' && evtObj.target.classList.contains('infobar1')) {
@@ -93,29 +94,28 @@ function resizeMessages() {
     }
 }
 
-function onTextClick(evtObj) {
+function onKeyClick(evtObj) {
     if (evtObj.keyCode === 13) {
         if (!isShift) {
             if (place === null) {
-                onSendButtonClick(evtObj);
+                sendMessage(evtObj);
             } else {
-                editMessage(evtObj);
+                changeMessage(evtObj);
             }
-            evtObj.preventDefault();
         } else {
             if (document.getElementById('todoMes').value !== '') {
                 document.getElementById('todoMes').value = document.getElementById('todoMes').value + '\r\n';
             }
             document.getElementById('todoMes').scrollTop = document.getElementById('todoMes').scrollHeight;
-            evtObj.preventDefault();
         }
+        evtObj.preventDefault();
     }
     if (evtObj.keyCode === 16) {
         isShift = true;
     }
 }
 
-function onTextUnClick(evtObj) {
+function onKeyUnClick(evtObj) {
     if (evtObj.keyCode === 16) {
         isShift = false;
     }
@@ -137,17 +137,18 @@ function clientSwitch() {
     mesbox.scrollTop = mesbox.scrollHeight;
 }
 
-function editMessage() {
+function changeMessage() {
     var text = document.getElementById('todoMes');
     if (text.value !== '' && text.value !== place.value) {
+        var info = '<edited at ' + getCorrectTime() + '>';
         place.value = text.value;
-        place.parentNode.firstChild.firstChild.childNodes[3].firstChild.value = '<edited>';
+        place.parentNode.firstChild.firstChild.childNodes[4].firstChild.value = info;
         var id = place.attributes['message-id'].value;
-        for (var i = 0; i < mlist.length; i++) {
-            if (mlist[i].id === id) {
-                mlist[i].message = place.value;
-                mlist[i].info = '<edited>';
-                store(mlist);
+        for (var i = 0; i < messagesList.length; i++) {
+            if (messagesList[i].id === id) {
+                messagesList[i].message = place.value;
+                messagesList[i].info = info;
+                store(messagesList);
                 break;
             }
         }
@@ -159,14 +160,15 @@ function editMessage() {
     place = null;
 }
 
-function deleteMes(evtObj) {
+function deleteMessage(evtObj) {
     var mes = evtObj.target.parentNode.parentNode.parentNode.parentNode;
     var id = mes.childNodes[1].attributes['message-id'].value;
-    for (var i = 0; i < mlist.length; i++) {
-        if (mlist[i].id === id) {
-            mlist[i].message = '';
-            mlist[i].info = '<deleted>';
-            store(mlist);
+    var info = '<deleted at ' + getCorrectTime() + '>';
+    for (var i = 0; i < messagesList.length; i++) {
+        if (messagesList[i].id === id) {
+            messagesList[i].message = '';
+            messagesList[i].info = info;
+            store(messagesList);
             break;
         }
     }
@@ -177,11 +179,11 @@ function deleteMes(evtObj) {
     mes.removeChild(mes.childNodes[1]);
     mes.firstChild.firstChild.removeChild(mes.firstChild.firstChild.firstChild);
     mes.firstChild.firstChild.removeChild(mes.firstChild.firstChild.firstChild);
-    mes.firstChild.firstChild.childNodes[1].firstChild.value = '<deleted>';
+    mes.firstChild.firstChild.childNodes[2].firstChild.value = info;
     document.getElementById('todoMes').focus();
 }
 
-function editMes(evtObj) {
+function editMessage(evtObj) {
     if (place !== null) {
         place.classList.remove('sys');
     }
@@ -198,12 +200,12 @@ function editMes(evtObj) {
     document.getElementById('todoMes').focus();
 }
 
-function onEditButtonClick() {
+function editLogin() {
     document.getElementById('login').value = Login.value;
     document.getElementById('login').focus();
 }
 
-function onSaveButtonClick(evtObj) {
+function saveLogin(evtObj) {
     if (evtObj.keyCode === 13 || evtObj.keyCode === 0) {
         var logIn = document.getElementById('login');
         if (!logIn.value) {
@@ -214,18 +216,17 @@ function onSaveButtonClick(evtObj) {
             Login.value = logIn.value;
         }
         logIn.value = '';
-        logIn.focus();
         mesbox.scrollTop = mesbox.scrollHeight;
     }
     localStorage.setItem('login', Login.value);
 }
 
-function onSendButtonClick() {
+function sendMessage() {
     var todoText = document.getElementById('todoMes');
     if (!todoText.value) {
         return;
     }
-    var item = createItem(todoText.value, Login.value, true, '');
+    var item = createItem(true, getCorrectTime(), Login.value, todoText.value, '');
     mesbox.appendChild(item);
     todoText.value = '';
     todoText.focus();
@@ -233,41 +234,47 @@ function onSendButtonClick() {
     mesbox.scrollTop = mesbox.scrollHeight;
 }
 
-function createItem(text, name, isMine, info) {
-    var msg = mStruct(name, text, false, info);
-    mlist.push(msg);
-    store(mlist);
+function createItem(isMine, time, name, text, info) {
     var message = document.createElement('div');
     var table = document.createElement('table');
     var row = document.createElement('tr');
     if (isMine) {
-        var cell1 = document.createElement('td');
-        cell1.classList.add('itd');
+        var editCell = document.createElement('td');
+        editCell.classList.add('itd');
         var ic1 = document.createElement('img');
         ic1.src = 'img/pencil.png';
         ic1.classList.add('edit');
-        var cell = document.createElement('td');
-        cell.classList.add('itd');
+        var deleteCell = document.createElement('td');
+        deleteCell.classList.add('itd');
         var ic2 = document.createElement('img');
         ic2.src = 'img/trashcan.png';
         ic2.classList.add('delete');
-        cell.appendChild(ic1);
-        cell1.appendChild(ic2);
-        row.appendChild(cell);
-        row.appendChild(cell1);
+        deleteCell.appendChild(ic1);
+        editCell.appendChild(ic2);
+        row.appendChild(deleteCell);
+        row.appendChild(editCell);
     }
-    var cell2 = document.createElement('td');
-    cell2.classList.add('ntd');
-    cell2.appendChild(document.createTextNode(name + ": "));
-    row.appendChild(cell2);
-    var cell0 = document.createElement('td');
-    cell0.appendChild(document.createElement('textarea'));
-    cell0.firstChild.classList.add('minfo');
-    cell0.firstChild.value = info;
-    cell0.firstChild.readOnly = true;
-    row.appendChild(cell0);
+    if (time !== '') {
+        var timeCell = document.createElement('td');
+        timeCell.classList.add('time');
+        timeCell.appendChild(document.createTextNode(time));
+        row.appendChild(timeCell);
+    }
+    var nameCell = document.createElement('td');
+    nameCell.classList.add('ntd');
+    nameCell.appendChild(document.createTextNode(name + ": "));
+    row.appendChild(nameCell);
+    var infoCell = document.createElement('td');
+    infoCell.appendChild(document.createElement('textarea'));
+    infoCell.firstChild.classList.add('minfo');
+    infoCell.firstChild.value = info;
+    infoCell.firstChild.readOnly = true;
+    row.appendChild(infoCell);
     table.appendChild(row);
     message.appendChild(table);
+    var msg = mStruct(name, text, time, false, info);
+    messagesList.push(msg);
+    store(messagesList);
     if (text !== '') {
         var txt = document.createElement('textarea');
         txt.value = text;
@@ -285,8 +292,8 @@ function sendSysMes(text) {
     mes.classList.add('system');
     mes.appendChild(txt);
     mesbox.appendChild(mes);
-    mlist.push(mStruct('', text, true));
-    store(mlist);
+    messagesList.push(mStruct('', text, '', true));
+    store(messagesList);
 }
 
 function store(listToSave) {
@@ -304,4 +311,18 @@ function restore() {
     }
     var item = localStorage.getItem("Message history");
     return item && JSON.parse(item);
+}
+
+function getCorrectTime() {
+    var date = new Date();
+    var time = addZero(date.getHours()) + ":" +
+            addZero(date.getMinutes()) + ":" + addZero(date.getSeconds());
+    return time;
+}
+
+function addZero(i) {
+    if (i < 10) {
+        i = "0" + i;
+    }
+    return i;
 }
