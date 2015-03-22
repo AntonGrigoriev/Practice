@@ -1,0 +1,15 @@
+GET http://localhost:999/chat?token=TN11EN HTTP/1.1
+Host: localhost:999
+Connection: keep-alive
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36
+Accept-Encoding: gzip, deflate, sdch
+Accept-Language: ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4
+Cookie: _ga=GA1.1.985652088.1425149468
+
+
+HTTP/1.1 200 OK
+Date: Sat, 21 Mar 2015 16:09:16 GMT
+Content-length: 52
+
+{"messages":["Hi!","How are you?"],"token":"TN27EN"}
