@@ -414,6 +414,8 @@ function post(url, data, continueWith, continueWithError) {
 
 function ajax(method, url, data, continueWith, continueWithError) {
     var xhr = new XMLHttpRequest();
+    continueWith = continueWith || function () {
+    };
     continueWithError = continueWithError || defaultErrorHandler;
     xhr.open(method || 'GET', url, true);
     xhr.onload = function () {
