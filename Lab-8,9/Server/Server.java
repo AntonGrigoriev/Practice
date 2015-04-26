@@ -35,7 +35,7 @@ public class Server implements HttpHandler {
                 String serverHost = InetAddress.getLocalHost().getHostAddress();
                 System.out.println("To get list of messages: GET http://" + serverHost + ":" + port + "/chat?token={token}");
                 System.out.println("To send message: POST http://" + serverHost + ":" + port + "/chat");
-                System.out.println("To delete and edit messages use POST");
+                System.out.println("To delete message use DELETE, to edit messages use PUT");
 
                 server.createContext("/chat", new Server());
                 server.setExecutor(null);
@@ -54,6 +54,12 @@ public class Server implements HttpHandler {
             response = doGet(httpExchange);
         } else if ("POST".equals(httpExchange.getRequestMethod())) {
             doPost(httpExchange);
+        } else if ("PUT".equals(httpExchange.getRequestMethod())) {
+            doPut(httpExchange);
+        } else if ("DELETE".equals(httpExchange.getRequestMethod())) {
+            doDelete(httpExchange);
+        } else if ("OPTIONS".equals(httpExchange.getRequestMethod())) {
+            response = "";
         } else {
             response = "Unsupported http method: " + httpExchange.getRequestMethod();
         }
@@ -85,22 +91,32 @@ public class Server implements HttpHandler {
     private void doPost(HttpExchange httpExchange) {
         try {
             Message message = messageExchange.getClientMessage(httpExchange.getRequestBody());
-            if (!"".equals(message.getName())) {
-                System.out.println("Get Message from " + message.getName() + "(client id: " + message.getClientId()
-                        + ") at " + message.getTime() + ": " + message.getMessage() + "(message id: " + message.getId() + ")");
-            } else {
-                if ("system".equals(message.getInfo())) {
-                    System.out.println("Get system message: " + message.getMessage());
-                } else {
-                    if ("".equals(message.getMessage())) {
-                        System.out.println("Get DELETE request " + "(client id: " + message.getClientId()
-                                + " message id: " + message.getId() + ")");
-                    } else {
-                        System.out.println("Get PUT request " + "(client id: " + message.getClientId()
-                                + " message id: " + message.getId() + "): " + message.getMessage());
-                    }
-                }
-            }
+            System.out.println("Get Message from " + message.getName() + "(" + message.getClientId()
+                    + ") at " + message.getTime() + ": " + message.getMessage() + "(" + message.getId() + ")");
+            System.out.println("Info: " + message.getInfo());
+            history.add(message);
+        } catch (ParseException e) {
+            System.err.println("Invalid data: " + httpExchange.getRequestBody() + " " + e.getMessage());
+        }
+    }
+    
+    private void doPut(HttpExchange httpExchange) {
+        try {
+            Message message = messageExchange.getClientMessage(httpExchange.getRequestBody());
+            System.out.println("Get PUT request from " + message.getName() + "(" + message.getClientId()
+                    + ") at " + message.getTime() + ": " + message.getMessage() + "(" + message.getId() + ")");
+            System.out.println("Info: " + message.getInfo());
+            history.add(message);
+        } catch (ParseException e) {
+            System.err.println("Invalid data: " + httpExchange.getRequestBody() + " " + e.getMessage());
+        }
+    }
+    
+    private void doDelete(HttpExchange httpExchange) {
+        try {
+            Message message = messageExchange.getClientMessage(httpExchange.getRequestBody());
+            System.out.println("Get DELETE request from " + message.getName() + "(" + message.getClientId()
+                    + ") at " + message.getTime() + ": " + message.getMessage() + "(" + message.getId() + ")");
             System.out.println("Info: " + message.getInfo());
             history.add(message);
         } catch (ParseException e) {
@@ -113,6 +129,9 @@ public class Server implements HttpHandler {
             byte[] bytes = response.getBytes();
             Headers headers = httpExchange.getResponseHeaders();
             headers.add("Access-Control-Allow-Origin", "*");
+            if ("OPTIONS".equals(httpExchange.getRequestMethod())) {
+                headers.add("Access-Control-Allow-Methods", "PUT, DELETE, POST, GET, OPTIONS");
+            }
             httpExchange.sendResponseHeaders(200, bytes.length);
             OutputStream os = httpExchange.getResponseBody();
             os.write(bytes);

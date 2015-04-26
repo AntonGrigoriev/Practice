@@ -1,4 +1,3 @@
-
 class Message {
 
     private String id;
@@ -7,24 +6,6 @@ class Message {
     private String message;
     private String time;
     private String info;
-
-    public Message() {
-        this.id = "";
-        this.name = "";
-        this.message = "";
-        this.info = "";
-        this.cId = "";
-        this.time = "";
-    }
-
-    public Message(String id, String cId, String time, String name, String message, String info) {
-        this.id = id;
-        this.cId = cId;
-        this.time = time;
-        this.name = name;
-        this.message = message;
-        this.info = info;
-    }
 
     public String getId() {
         return this.id;
